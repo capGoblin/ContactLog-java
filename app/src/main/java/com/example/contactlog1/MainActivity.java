@@ -1,6 +1,12 @@
 package com.example.contactlog1;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.contactlog1.adapters.RecyclerViewAdapter;
 import com.example.contactlog1.interfaces.RecyclerViewInterface;
@@ -24,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
     private final ArrayList<ContactLog> contactLogs = new ArrayList<>();
+    private int cd_position;
+    private String selectedOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +60,56 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        setUpSpinnerListener();
     }
+    private boolean isFirstSelection = true;
+
+    private void setUpSpinnerListener() {
+        Spinner spinnerFilter = findViewById(R.id.spinnerFilter);
+        String[] options = {"Select option", "yesterday", "last week", "last month"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, options);
+        spinnerFilter.setAdapter(adapter);
+        spinnerFilter.setSelection(0);
+        spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Handle item selection here
+                if (isFirstSelection) {
+                    isFirstSelection = false;
+                    System.out.println("WWWWWWWW");
+                    return;
+                }
+                System.out.println("position: " + position);
+                selectedOption = options[position];
+                System.out.println("Selected option: " + selectedOption);
+                // Depending on the selected option, perform filtering or other actions
+                // For example:
+                if (!selectedOption.equals("Select option")) {
+                    Intent intent = new Intent(MainActivity.this, ContactDetailsActivity.class);
+                    intent.putExtra("CONTACT_LOG", contactLogs.get(cd_position));
+                    intent.putExtra("SELECTED_OPTION", selectedOption);
+                    startActivity(intent);
+                }
+//                if (selectedOption.equals("yesterday")) {
+//                    // Perform filtering for yesterday
+//                    System.out.println("yesterday clicked");
+//                } else if (selectedOption.equals("last week")) {
+//                    // Perform filtering for last week
+//                    System.out.println("last week clicked");
+//                } else if (selectedOption.equals("last month")) {
+//                    // Perform filtering for last month
+//                    System.out.println("last month clicked");
+//                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Do nothing
+            }
+        });
+    }
+
     private void populateInitialData() {
         contactLogs.add(new ContactLog("John Doe", "1234567890", "8", "40", "160", "320", "640", "1280"));
         contactLogs.add(new ContactLog("Jane Doe", "0987654321", "7", "35", "140", "280", "560", "1120"));
@@ -98,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     @Override
     public void onItemClick(int position) {
         System.out.println("Clicked " + position);
+        this.cd_position = position;
 
     }
 }
