@@ -15,10 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <TableRow>
-            <TextView
-                android:id="@+id/textName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+
             <!-- Add other TextViews for other data -->
 
             <!-- Add an empty cell for spacing -->
@@ -45,6 +42,7 @@
                 android:id="@+id/textNameHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="30dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Name" />
@@ -54,6 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="30dp"
                 android:gravity="center"
 
                 android:text="Phone no" />
@@ -63,8 +62,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="30dp"
                 android:gravity="center"
-
                 android:text="yesterday" />
 
             <TextView
@@ -72,6 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="30dp"
                 android:gravity="center"
 
                 android:text="lastWeek" />
@@ -81,8 +81,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="30dp"
                 android:gravity="center"
-
                 android:text="lastMonth" />
 
             <!-- Add other TextViews for other headers -->

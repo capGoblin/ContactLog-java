@@ -25,11 +25,10 @@
         <activity
             android:name=".ContactDetailsActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.contactlog1.MainActivity"/>
+            >
+ />
         </activity>
+        <activity android:name=".UnsavedContactLogActivity"/>
     </application>
 
 </manifest>

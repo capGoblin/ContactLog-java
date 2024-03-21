@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_switch_activity"
+        android:title="Unsaved ContactLog"
+        app:showAsAction="never" /> <!-- Set showAsAction to "never" to display the item in the overflow menu -->
+
+</menu>
