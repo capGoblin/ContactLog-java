@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -28,7 +29,7 @@ public class UnsavedContactLogActivity extends AppCompatActivity implements Recy
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
     private final ArrayList<ContactLog> contactLogs = new ArrayList<>();
-    private int cd_position;
+    private int cd_position = -1;
     private String selectedOption;
 
     @Override
@@ -99,11 +100,16 @@ public class UnsavedContactLogActivity extends AppCompatActivity implements Recy
                 selectedOption = options[position];
                 System.out.println("Selected option: " + selectedOption);
                 if (!selectedOption.equals("Select option")) {
+                    if(cd_position != -1) {
+
                     Intent intent = new Intent(UnsavedContactLogActivity.this, ContactDetailsActivity.class);
                     intent.putExtra("CONTACT_LOG", contactLogs.get(cd_position));
                     intent.putExtra("SELECTED_OPTION", selectedOption);
                     intent.putExtra("SOURCE_ACTIVITY", "UnsavedContactLogActivity");
                     startActivity(intent);
+                    } else {
+                        Toast.makeText(UnsavedContactLogActivity.this, "Select a ContactLog", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
             @Override

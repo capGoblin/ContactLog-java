@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.contactlog1.adapters.RecyclerViewAdapter;
 import com.example.contactlog1.interfaces.RecyclerViewInterface;
@@ -24,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contactlog1.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewInterface {
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
     private final ArrayList<ContactLog> contactLogs = new ArrayList<>();
-    private int cd_position;
+    private int cd_position = -1;
     private String selectedOption;
 
     @Override
@@ -92,11 +92,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
                 }
                 selectedOption = options[position];
                 if (!selectedOption.equals("Select option")) {
-                    Intent intent = new Intent(MainActivity.this, ContactDetailsActivity.class);
-                    intent.putExtra("CONTACT_LOG", contactLogs.get(cd_position));
-                    intent.putExtra("SELECTED_OPTION", selectedOption);
-                    intent.putExtra("SOURCE_ACTIVITY", "MainActivity");
-                    startActivity(intent);
+                    if(cd_position != -1) {
+                        Intent intent = new Intent(MainActivity.this, ContactDetailsActivity.class);
+                        intent.putExtra("CONTACT_LOG", contactLogs.get(cd_position));
+                        intent.putExtra("SELECTED_OPTION", selectedOption);
+                        intent.putExtra("SOURCE_ACTIVITY", "MainActivity");
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(MainActivity.this, "Select a ContactLog", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
             @Override

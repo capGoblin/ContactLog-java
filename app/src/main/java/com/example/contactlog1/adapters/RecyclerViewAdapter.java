@@ -56,7 +56,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private void setBackgroundColor(@NonNull ViewHolder holder, int position) {
         if (position == selectedItem) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.lavender));
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.blue));
         } else {
             holder.itemView.setBackgroundColor(Color.TRANSPARENT);
         }
