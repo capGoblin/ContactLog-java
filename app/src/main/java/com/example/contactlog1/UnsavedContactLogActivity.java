@@ -229,7 +229,7 @@ public class UnsavedContactLogActivity extends AppCompatActivity implements Recy
                     intent.putExtra("SOURCE_ACTIVITY", "UnsavedContactLogActivity");
                     startActivity(intent);
                     } else {
-                        Toast.makeText(UnsavedContactLogActivity.this, "Select a ContactLog", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UnsavedContactLogActivity.this, "Select a contact log", Toast.LENGTH_SHORT).show();
                         selectedOption = options[0];
                         spinnerFilter.setSelection(0);
                     }

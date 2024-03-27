@@ -296,7 +296,7 @@ public String addDuration(String duration1, String duration2) {
                         intent.putExtra("SOURCE_ACTIVITY", "MainActivity");
                         startActivity(intent);
                     } else {
-                        Toast.makeText(MainActivity.this, "Select a ContactLog", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Select a contact log", Toast.LENGTH_SHORT).show();
                         selectedOption = options[0];
                         spinnerFilter.setSelection(0);
                     }
