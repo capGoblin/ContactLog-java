@@ -61,9 +61,18 @@ public class ContactDetailsActivity extends AppCompatActivity {
         TextView cdLastWeekTextView = findViewById(R.id.cd_lastWeek);
         TextView cdLastMonthTextView = findViewById(R.id.cd_lastMonth);
 
-        String yesterdayInfo = cl.getYesterdayHours() + "/" + cl.getYesterdayCount();
-        String lastWeekInfo = cl.getLastWeekHours()+ "/" + cl.getLastWeekCount();
-        String lastMonthInfo = cl.getLastMonthHours() + "/" + cl.getLastMonthCount();
+        String yesterdayInfo = "";
+        String lastWeekInfo = "";
+        String lastMonthInfo = "";
+        if(!Objects.equals(cl.getYesterdayHours(), "")) {
+            yesterdayInfo = cl.getYesterdayHours() + "/" + cl.getYesterdayCount();
+        }
+        if(!Objects.equals(cl.getLastWeekHours(), "")) {
+            lastWeekInfo = cl.getLastWeekHours() + "/" + cl.getLastWeekCount();
+        }
+        if(!Objects.equals(cl.getLastMonthHours(), "")) {
+            lastMonthInfo = cl.getLastMonthHours() + "/" + cl.getLastMonthCount();
+        }
         cdPhoneTextView.setText(phoneNumber);
         cdYesterdayTextView.setText(yesterdayInfo);
         cdLastWeekTextView.setText(lastWeekInfo);
