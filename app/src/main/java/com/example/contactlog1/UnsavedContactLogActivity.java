@@ -27,6 +27,7 @@ import com.example.contactlog1.interfaces.RecyclerViewInterface;
 import com.example.contactlog1.models.ContactLog;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -117,6 +118,22 @@ public class UnsavedContactLogActivity extends AppCompatActivity implements Recy
 
             }
         }
+        contactLogs.sort(new Comparator<ContactLog>() {
+            @Override
+            public int compare(ContactLog o1, ContactLog o2) {
+                boolean o1HasHours = !o1.getYesterdayHours().isEmpty() || !o1.getLastWeekHours().isEmpty() || !o1.getLastMonthHours().isEmpty();
+
+                boolean o2HasHours = !o2.getYesterdayHours().isEmpty() || !o2.getLastWeekHours().isEmpty() || !o2.getLastMonthHours().isEmpty();
+
+                if (o1HasHours && !o2HasHours) {
+                    return -1;
+                } else if (!o1HasHours && o2HasHours) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
     }
 
     private int calculateMaxHeaderWidth() {
