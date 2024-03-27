@@ -238,7 +238,6 @@ public String addDuration(String duration1, String duration2) {
             return "Other";
         }
     }
-
     private boolean isFirstSelection = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
