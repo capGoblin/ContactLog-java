@@ -26,9 +26,13 @@ import com.example.contactlog1.interfaces.RecyclerViewInterface;
 //import com.example.contactlog1.models.ContactLog;
 import com.example.contactlog1.models.ContactLog;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     private final ArrayList<ContactLog> contactLogs = new ArrayList<>();
     private int cd_position = -1;
     private String selectedOption;
+    private boolean hasPermission = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +70,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
 
         binding.toolbar.setTitle("Saved ContactLogs");
         setSupportActionBar(binding.toolbar);
-
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, PackageManager.PERMISSION_GRANTED);
+        if(!hasPermission){
+            permission.launch(android.Manifest.permission.READ_CALL_LOG);
+        } else {
+            getSavedContactLog();
+        }
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-//        populateInitialData();
-        getSavedContactLog();
         adapter = new RecyclerViewAdapter(this, this, contactLogs, calculateMaxHeaderWidth());
 
         recyclerView.setAdapter(adapter);
@@ -77,6 +83,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
 
         setUpSpinnerListener();
     }
+    @SuppressLint("NotifyDataSetChanged")
+    private final ActivityResultLauncher<String> permission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
+        if(result){
+            hasPermission = true;
+            getSavedContactLog();
+            adapter.notifyDataSetChanged();
+        } else {
+            Toast.makeText(this, "Permission required to log", Toast.LENGTH_SHORT).show();
+        }
+    });
 
     public  void  getSavedContactLog() {
         Map<String, ContactLog> contactLogMap = new HashMap<>();
