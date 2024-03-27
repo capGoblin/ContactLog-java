@@ -1,7 +1,17 @@
 package com.example.contactlog1;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CallLog;
+import android.provider.ContactsContract;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +28,7 @@ import com.example.contactlog1.models.ContactLog;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +37,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.contactlog1.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewInterface {
 
@@ -47,16 +66,179 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         binding.toolbar.setTitle("Saved ContactLogs");
         setSupportActionBar(binding.toolbar);
 
-
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, PackageManager.PERMISSION_GRANTED);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        populateInitialData();
-        adapter = new RecyclerViewAdapter(this, this, contactLogs);
+//        populateInitialData();
+        getSavedContactLog();
+        adapter = new RecyclerViewAdapter(this, this, contactLogs, calculateMaxHeaderWidth());
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         setUpSpinnerListener();
     }
+
+    public  void  getSavedContactLog() {
+        Map<String, ContactLog> contactLogMap = new HashMap<>();
+
+        Uri uri = Uri.parse("content://call_log/calls");
+        try (Cursor cursor = getContentResolver().query(
+                uri,
+                null,
+                null,
+                null,
+                null)) {
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME));
+                    @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER));
+                    @SuppressLint("Range") long callDuration = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DURATION));
+                    @SuppressLint("Range") long callDate = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DATE));
+                    if(name == null || name.isEmpty()) {
+                        continue;
+                    }
+                    long currentTime = System.currentTimeMillis();
+                    String timePeriod = getTimePeriod(callDate, currentTime);
+                    String formattedDuration = formatCallDuration(callDuration);
+                    ContactLog contactLog = contactLogMap.get(phoneNumber);
+                    if (contactLog == null) {
+                        contactLog = new ContactLog(name, phoneNumber, "", "", "", "", "", "");
+                        contactLogMap.put(phoneNumber, contactLog);
+                    }
+                    switch (timePeriod) {
+                        case "Yesterday":
+                            contactLog.setYesterdayHours(addDuration(contactLog.getYesterdayHours(), formattedDuration));
+                            break;
+                        case "Last Week":
+                            contactLog.setLastWeekHours(addDuration(contactLog.getLastWeekHours(), formattedDuration));
+                            break;
+                        case "Last Month":
+                            contactLog.setLastMonthHours(addDuration(contactLog.getLastMonthHours(), formattedDuration));
+                            break;
+                        default:
+                            break;
+                    }
+                } while (cursor.moveToNext());
+                contactLogs.addAll(contactLogMap.values());
+
+            }
+        }
+        contactLogs.sort(new Comparator<ContactLog>() {
+            @Override
+            public int compare(ContactLog o1, ContactLog o2) {
+                boolean o1HasHours = !o1.getYesterdayHours().isEmpty() || !o1.getLastWeekHours().isEmpty() || !o1.getLastMonthHours().isEmpty();
+
+                boolean o2HasHours = !o2.getYesterdayHours().isEmpty() || !o2.getLastWeekHours().isEmpty() || !o2.getLastMonthHours().isEmpty();
+
+                if (o1HasHours && !o2HasHours) {
+                    return -1;
+                } else if (!o1HasHours && o2HasHours) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+    }
+    private int calculateMaxHeaderWidth() {
+        int maxWidth = 0;
+
+        TextView textNameHeader = findViewById(R.id.textNameHeader);
+        TextView phoneNoHeader = findViewById(R.id.phoneNoHeader);
+        TextView yesterdayHeader = findViewById(R.id.yesterdayHeader);
+        TextView lastWeekHeader = findViewById(R.id.lastWeekHeader);
+        TextView lastMonthHeader = findViewById(R.id.lastMonthHeader);
+
+        Paint paint = new Paint();
+        paint.setTextSize(textNameHeader.getTextSize());
+
+        int textNameWidth = (int) paint.measureText(textNameHeader.getText().toString());
+        int phoneNoWidth = (int) paint.measureText(phoneNoHeader.getText().toString());
+        int yesterdayWidth = (int) paint.measureText(yesterdayHeader.getText().toString());
+        int lastWeekWidth = (int) paint.measureText(lastWeekHeader.getText().toString());
+        int lastMonthWidth = (int) paint.measureText(lastMonthHeader.getText().toString());
+
+        maxWidth = Math.max(maxWidth, textNameWidth);
+        maxWidth = Math.max(maxWidth, phoneNoWidth);
+        maxWidth = Math.max(maxWidth, yesterdayWidth);
+        maxWidth = Math.max(maxWidth, lastWeekWidth);
+        maxWidth = Math.max(maxWidth, lastMonthWidth);
+
+        return maxWidth;
+    }
+    private String formatCallDuration(long duration) {
+        long hours = TimeUnit.SECONDS.toHours(duration);
+        long minutes = TimeUnit.SECONDS.toMinutes(duration) - TimeUnit.HOURS.toMinutes(hours);
+        long seconds = duration - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+
+        if (duration < 60) {
+            return String.format(Locale.getDefault(), "%ds", duration);
+        } else if (hours == 0) {
+            return String.format(Locale.getDefault(), "%dm", minutes);
+        } else {
+            return String.format(Locale.getDefault(), "%dh", hours);
+        }
+    }
+public String addDuration(String duration1, String duration2) {
+        if (duration1.isEmpty()) {
+            return duration2;
+        }
+        char unit1 = duration1.charAt(duration1.length() - 1);
+        int value1 = Integer.parseInt(duration1.substring(0, duration1.length() - 1));
+
+        char unit2 = duration2.charAt(duration2.length() - 1);
+        int value2 = Integer.parseInt(duration2.substring(0, duration2.length() - 1));
+
+        int totalSeconds = convertToSeconds(duration1) + convertToSeconds(duration2);
+
+        return formatDuration(totalSeconds, unit1);
+    }
+
+    private int convertToSeconds(String duration) {
+        char unit = duration.charAt(duration.length() - 1);
+        int value = Integer.parseInt(duration.substring(0, duration.length() - 1));
+        switch (unit) {
+            case 's':
+                return value;
+            case 'm':
+                return value * 60;
+            case 'h':
+                return value * 3600;
+            default:
+                return 0;
+        }
+    }
+
+    private String formatDuration(int totalSeconds, char unit) {
+        switch (unit) {
+            case 's':
+                return totalSeconds + "s";
+            case 'm':
+                return (totalSeconds / 60) + "m";
+            case 'h':
+                return (totalSeconds / 3600) + "h";
+            default:
+                return "";
+        }
+    }
+    private String getTimePeriod(long callDate, long currentTime) {
+        long oneDayInMillis = 24 * 60 * 60 * 1000;
+        long oneWeekInMillis = 7 * oneDayInMillis;
+        long oneMonthInMillis = 30 * oneDayInMillis;
+
+        long timeDiff = currentTime - callDate;
+        if (timeDiff <= oneDayInMillis) {
+            return "Yesterday";
+        } else if (timeDiff <= oneWeekInMillis) {
+            return "Last Week";
+        } else if (timeDiff <= oneMonthInMillis) {
+            return "Last Month";
+        } else {
+            return "Other";
+        }
+    }
+
     private boolean isFirstSelection = true;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -100,6 +282,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
                         startActivity(intent);
                     } else {
                         Toast.makeText(MainActivity.this, "Select a ContactLog", Toast.LENGTH_SHORT).show();
+                        selectedOption = options[0];
+                        spinnerFilter.setSelection(0);
                     }
                 }
             }
@@ -109,16 +293,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         });
     }
 
-    private void populateInitialData() {
-        contactLogs.add(new ContactLog("JohnDoeOne", "1234567890", "8", "40", "160", "320", "640", "1280"));
-        contactLogs.add(new ContactLog("JaneDoeTwo", "0987654321", "7", "35", "140", "280", "560", "1120"));
-        contactLogs.add(new ContactLog("BobSmithOne", "1122334455", "6", "30", "120", "240", "480", "960"));
-        contactLogs.add(new ContactLog("AliceJohnTwo", "2233445566", "5", "25", "100", "200", "400", "800"));
-        contactLogs.add(new ContactLog("CharlieBrown", "3344556677", "4", "20", "80", "160", "320", "640"));
-        contactLogs.add(new ContactLog("LucyVanPelt", "4455667788", "3", "15", "60", "120", "240", "480"));
-        contactLogs.add(new ContactLog("LinusVanPelt", "5566778899", "2", "10", "40", "80", "160", "320"));
-        contactLogs.add(new ContactLog("SnoopyDogOne", "6677889900", "1", "5", "20", "40", "80", "160"));
-    }
     @Override
     public void onItemClick(int position) {
         this.cd_position = position;

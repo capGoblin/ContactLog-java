@@ -18,16 +18,19 @@ import com.example.contactlog1.interfaces.RecyclerViewInterface;
 import com.example.contactlog1.models.ContactLog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private final RecyclerViewInterface recyclerViewInterface;
     Context context;
     ArrayList<ContactLog> contactLogs;
     private int selectedItem = RecyclerView.NO_POSITION;
-    public RecyclerViewAdapter(RecyclerViewInterface recyclerViewInterface, Context context, ArrayList<ContactLog> contactLogs) {
+    private final int maxHeaderWidth;
+    public RecyclerViewAdapter(RecyclerViewInterface recyclerViewInterface, Context context, ArrayList<ContactLog> contactLogs, int maxHeaderWidth) {
         this.recyclerViewInterface = recyclerViewInterface;
         this.context = context;
         this.contactLogs = contactLogs;
+        this.maxHeaderWidth = maxHeaderWidth;
     }
 
     @NonNull
@@ -40,6 +43,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.name.setWidth(maxHeaderWidth);
+        holder.phoneNo.setWidth(maxHeaderWidth);
+        holder.yesterday.setWidth(maxHeaderWidth);
+        holder.lastWeek.setWidth(maxHeaderWidth);
+        holder.lastMonth.setWidth(maxHeaderWidth);
         ContactLog contactLog = contactLogs.get(position);
         setBackgroundColor(holder, position);
         setContactLogDetails(holder, contactLog);
@@ -53,6 +61,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
     }
+
+
 
     private void setBackgroundColor(@NonNull ViewHolder holder, int position) {
         if (position == selectedItem) {
@@ -73,10 +83,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             holder.name.setVisibility(View.GONE);
             holder.phoneNo.setText(contactLog.getPhoneNumber());
             holder.lastWeek.setText(contactLog.getLastWeekHours());
-
-            String yesterdayInfo = contactLog.getYesterdayHours() + "/" + contactLog.getYesterdayCount();
-            String lastWeekInfo = contactLog.getLastWeekHours()+ "/" + contactLog.getLastWeekCount();
-            String lastMonthInfo = contactLog.getLastMonthHours() + "/" + contactLog.getLastMonthCount();
+            String yesterdayInfo = "";
+            String lastWeekInfo = "";
+            String lastMonthInfo = "";
+            if(!Objects.equals(contactLog.getYesterdayHours(), "")) {
+                yesterdayInfo = contactLog.getYesterdayHours() + "/" + contactLog.getYesterdayCount();
+            }
+            if(!Objects.equals(contactLog.getLastWeekHours(), "")) {
+                lastWeekInfo = contactLog.getLastWeekHours() + "/" + contactLog.getLastWeekCount();
+            }
+            if(!Objects.equals(contactLog.getLastMonthHours(), "")) {
+                lastMonthInfo = contactLog.getLastMonthHours() + "/" + contactLog.getLastMonthCount();
+            }
             holder.yesterday.setText(yesterdayInfo);
             holder.lastWeek.setText(lastWeekInfo);
             holder.lastMonth.setText(lastMonthInfo);

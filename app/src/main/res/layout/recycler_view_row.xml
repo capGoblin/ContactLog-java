@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="start"
-
+            android:ellipsize="end"
+            android:maxLines="1"
             />
 
         <TextView
@@ -33,6 +34,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="start"
+            android:ellipsize="end"
+            android:maxLines="1"
             />
 
         <TextView
@@ -40,14 +43,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="start"
+            android:gravity="center"
+            android:ellipsize="end"
+            android:maxLines="1"
             />
         <TextView
             android:id="@+id/rv_lastWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="start"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             />
 
         <TextView
@@ -55,7 +62,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="start"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             />
     </TableRow>
 

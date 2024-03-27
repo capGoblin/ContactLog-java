@@ -4,14 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ContactLog implements Parcelable {
-    private final String name;
-    private final String phoneNumber;
-    private final String yesterdayHours;
-    private final String yesterdayCount;
-    private final String lastWeekHours;
-    private final String lastWeekCount;
-    private final String lastMonthHours;
-    private final String lastMonthCount;
+    private String name;
+    private String phoneNumber;
+    private String yesterdayHours;
+    private String yesterdayCount;
+    private String lastWeekHours;
+    private String lastWeekCount;
+    private String lastMonthHours;
+    private String lastMonthCount;
 
     protected ContactLog(Parcel in) {
         name = in.readString();
@@ -55,6 +55,38 @@ public class ContactLog implements Parcelable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setYesterdayHours(String yesterdayHours) {
+        this.yesterdayHours = yesterdayHours;
+    }
+
+    public void setYesterdayCount(String yesterdayCount) {
+        this.yesterdayCount = yesterdayCount;
+    }
+
+    public void setLastWeekHours(String lastWeekHours) {
+        this.lastWeekHours = lastWeekHours;
+    }
+
+    public void setLastWeekCount(String lastWeekCount) {
+        this.lastWeekCount = lastWeekCount;
+    }
+
+    public void setLastMonthHours(String lastMonthHours) {
+        this.lastMonthHours = lastMonthHours;
+    }
+
+    public void setLastMonthCount(String lastMonthCount) {
+        this.lastMonthCount = lastMonthCount;
     }
 
     public String getPhoneNumber() {
