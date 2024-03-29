@@ -13,6 +13,7 @@ public class ContactLog implements Parcelable {
     private String lastMonthHours;
     private String lastMonthCount;
 
+    private String selectedHours;
     protected ContactLog(Parcel in) {
         name = in.readString();
         phoneNumber = in.readString();
@@ -126,5 +127,9 @@ public class ContactLog implements Parcelable {
         this.lastWeekCount = lastWeekCount;
         this.lastMonthHours = lastMonthHours;
         this.lastMonthCount = lastMonthCount;
+    }
+
+    public void setSelectedHours(String selectedHours) {
+        this.selectedHours = selectedHours;
     }
 }

@@ -29,16 +29,16 @@ public class ContactDetailsActivity extends AppCompatActivity {
         setupToolbar();
         Intent intent = getIntent();
         ContactLog cl = intent.getParcelableExtra("CONTACT_LOG");
-        String selectedOption = intent.getStringExtra("SELECTED_OPTION");
+//        String selectedOption = intent.getStringExtra("SELECTED_OPTION");
         String sourceActivity = intent.getStringExtra("SOURCE_ACTIVITY");
         if(sourceActivity != null && sourceActivity.equals("MainActivity")) {
-            handleMainActivity(cl, selectedOption);
+            handleMainActivity(cl);
         } else if (sourceActivity != null && sourceActivity.equals("UnsavedContactLogActivity")) {
-            handleUnsavedContactLogActivity(cl , selectedOption);
+            handleUnsavedContactLogActivity(cl);
         }
     }
 
-    private void handleUnsavedContactLogActivity(ContactLog cl, String selectedOption) {
+    private void handleUnsavedContactLogActivity(ContactLog cl) {
         if (cl == null)
             return;
         String phoneNumber = cl.getPhoneNumber();
@@ -77,10 +77,10 @@ public class ContactDetailsActivity extends AppCompatActivity {
         cdYesterdayTextView.setText(yesterdayInfo);
         cdLastWeekTextView.setText(lastWeekInfo);
         cdLastMonthTextView.setText(lastMonthInfo);
-        setVisibilityBasedOnOption(selectedOption, cdYesterdayTextView, cdLastWeekTextView, cdLastMonthTextView, yesterdayTextView, lastWeekTextView, lastMonthTextView);
+//        setVisibilityBasedOnOption(selectedOption, cdYesterdayTextView, cdLastWeekTextView, cdLastMonthTextView, yesterdayTextView, lastWeekTextView, lastMonthTextView);
     }
 
-    private void handleMainActivity(ContactLog cl, String selectedOption) {
+    public void handleMainActivity(ContactLog cl) {
         if (cl == null)
             return;
         String name = cl.getName();
@@ -89,9 +89,9 @@ public class ContactDetailsActivity extends AppCompatActivity {
         String lastWeekHours = cl.getLastWeekHours();
         String lastMonthHours = cl.getLastMonthHours();
 
-        TextView yesterdayTextView = findViewById(R.id.cd_yesterdayHeader);
-        TextView lastWeekTextView = findViewById(R.id.cd_lastWeekHeader);
-        TextView lastMonthTextView = findViewById(R.id.cd_lastMonthHeader);
+        TextView yesterdayTextView = findViewById(R.id.yesterdayHeader);
+        TextView lastWeekTextView = findViewById(R.id.lastWeekHeader);
+        TextView lastMonthTextView = findViewById(R.id.lastMonthHeader);
 
         TextView cdNameTextView = findViewById(R.id.cd_textName);
 
@@ -105,7 +105,7 @@ public class ContactDetailsActivity extends AppCompatActivity {
         cdYesterdayTextView.setText(yesterdayHours);
         cdLastWeekTextView.setText(lastWeekHours);
         cdLastMonthTextView.setText(lastMonthHours);
-        setVisibilityBasedOnOption(selectedOption, cdYesterdayTextView, cdLastWeekTextView, cdLastMonthTextView, yesterdayTextView, lastWeekTextView, lastMonthTextView);
+//        setVisibilityBasedOnOption(selectedOption, cdYesterdayTextView, cdLastWeekTextView, cdLastMonthTextView, yesterdayTextView, lastWeekTextView, lastMonthTextView);
     }
     private void setVisibilityBasedOnOption(String selectedOption, TextView cdYesterdayTextView, TextView cdLastWeekTextView, TextView cdLastMonthTextView, TextView yesterdayTextView, TextView lastWeekTextView, TextView lastMonthTextView) {
         switch (Objects.requireNonNull(selectedOption)) {

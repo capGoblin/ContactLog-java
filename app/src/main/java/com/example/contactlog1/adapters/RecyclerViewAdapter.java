@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     ArrayList<ContactLog> contactLogs;
     private int selectedItem = RecyclerView.NO_POSITION;
     private final int maxHeaderWidth;
+    private String selectedOption = "";
+
     public RecyclerViewAdapter(RecyclerViewInterface recyclerViewInterface, Context context, ArrayList<ContactLog> contactLogs, int maxHeaderWidth) {
         this.recyclerViewInterface = recyclerViewInterface;
         this.context = context;
@@ -51,6 +54,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         ContactLog contactLog = contactLogs.get(position);
         setBackgroundColor(holder, position);
         setContactLogDetails(holder, contactLog);
+        if(!selectedOption.isEmpty()) {
+            setOptionsToRows(selectedOption, holder);
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,6 +68,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         });
     }
 
+    private void setOptionsToRows(String selectedOption, ViewHolder holder) {
+        switch (selectedOption) {
+            case "yesterday":
+                holder.lastWeek.setVisibility(View.GONE);
+                holder.lastMonth.setVisibility(View.GONE);
+                holder.yesterday.setVisibility(View.VISIBLE);
+                System.out.println("GONE ANH");
+//                cdYesterdayTextView.setText(yesterdayHours);
+//                    setVisibility(cl, lastWeekHours, lastMonthHours);
+//                adapter.notifyDataSetChanged();
+                break;
+            case "last week":
+                holder.lastMonth.setVisibility(View.GONE);
+                holder.yesterday.setVisibility(View.GONE);
+                holder.lastWeek.setVisibility(View.VISIBLE);
+
+//                cdLastWeekTextView.setText(lastWeekHours);
+//                    setVisibility(cl, yesterdayHours, lastMonthHours);
+//                adapter.notifyDataSetChanged();
+                break;
+            case "last month":
+                holder.yesterday.setVisibility(View.GONE);
+                holder.lastWeek.setVisibility(View.GONE);
+                holder.lastMonth.setVisibility(View.VISIBLE);
+
+//                cdLastMonthTextView.setText(lastMonthHours);
+//                    setVisibility(cl, yesterdayHours, lastWeekHours);
+//                adapter.notifyDataSetChanged();
+                break;
+        }
+    }
 
 
     private void setBackgroundColor(@NonNull ViewHolder holder, int position) {
@@ -105,6 +142,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public int getItemCount() {
         return contactLogs.size();
     }
+
+    public void setSelectedOption(String selectedOption) {
+        this.selectedOption = selectedOption;
+        System.out.println(selectedOption + "HERER");
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView name;
         TextView phoneNo;

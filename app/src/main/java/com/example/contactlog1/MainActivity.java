@@ -277,10 +277,11 @@ public String addDuration(String duration1, String duration2) {
     private void setUpSpinnerListener() {
         Spinner spinnerFilter = findViewById(R.id.spinnerFilter);
         String[] options = {"Select option", "yesterday", "last week", "last month"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, options);
-        spinnerFilter.setAdapter(adapter);
+        ArrayAdapter<String> Aadapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, options);
+        spinnerFilter.setAdapter(Aadapter);
         spinnerFilter.setSelection(0);
         spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if (isFirstSelection) {
@@ -289,17 +290,45 @@ public String addDuration(String duration1, String duration2) {
                 }
                 selectedOption = options[position];
                 if (!selectedOption.equals("Select option")) {
-                    if(cd_position != -1) {
-                        Intent intent = new Intent(MainActivity.this, ContactDetailsActivity.class);
-                        intent.putExtra("CONTACT_LOG", contactLogs.get(cd_position));
-                        intent.putExtra("SELECTED_OPTION", selectedOption);
-                        intent.putExtra("SOURCE_ACTIVITY", "MainActivity");
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(MainActivity.this, "Select a contact log", Toast.LENGTH_SHORT).show();
-                        selectedOption = options[0];
-                        spinnerFilter.setSelection(0);
+                    adapter.setSelectedOption(selectedOption);
+                    adapter.notifyDataSetChanged();
+
+//                        for(int i = 0; i < contactLogs.toArray().length; i++) {
+//                            ContactLog cl = contactLogs.get(i)
+                    TextView yesterdayTextView = findViewById(R.id.yesterdayHeader);
+                    TextView lastWeekTextView = findViewById(R.id.lastWeekHeader);
+                    TextView lastMonthTextView = findViewById(R.id.lastMonthHeader);
+                    if(selectedOption.equals(options[1])) {
+                        yesterdayTextView.setVisibility(TextView.VISIBLE);
+                        lastWeekTextView.setVisibility(TextView.GONE);
+                        lastMonthTextView.setVisibility(TextView.GONE);
+                    } else if (selectedOption.equals(options[2])) {
+                        yesterdayTextView.setVisibility(TextView.GONE);
+                        lastWeekTextView.setVisibility(TextView.VISIBLE);
+                        lastMonthTextView.setVisibility(TextView.GONE);
+                    } else if (selectedOption.equals(options[3])) {
+                        yesterdayTextView.setVisibility(TextView.GONE);
+                        lastWeekTextView.setVisibility(TextView.GONE);
+                        lastMonthTextView.setVisibility(TextView.VISIBLE);
+//                    } else if (selectedOption.equals(options[2])) {
+//
+//                    } else if (selectedOption.equals(options[3])) {
+
                     }
+
+//                    handleMainActivity(selectedOption);
+
+//                        }
+//                        Intent intent = new Intent(MainActivity.this, ContactDetailsActivity.class);
+//                        intent.putExtra("CONTACT_LOG", contactLogs.get(cd_position));
+//                        intent.putExtra("SELECTED_OPTION", selectedOption);
+//                        intent.putExtra("SOURCE_ACTIVITY", "MainActivity");
+//                        startActivity(intent);
+//                    } else {
+//                        Toast.makeText(MainActivity.this, "Select a contact log", Toast.LENGTH_SHORT).show();
+//                        selectedOption = options[0];
+//                        spinnerFilter.setSelection(0);
+//                    }
                 }
             }
             @Override
@@ -307,10 +336,104 @@ public String addDuration(String duration1, String duration2) {
             }
         });
     }
+    @SuppressLint("NotifyDataSetChanged")
+    public void handleMainActivity(String selectedOption) {
+        for (ContactLog cl : contactLogs) {
+            String yesterdayHours = cl.getYesterdayHours();
+            String lastWeekHours = cl.getLastWeekHours();
+            String lastMonthHours = cl.getLastMonthHours();
+            TextView cdYesterdayTextView = findViewById(R.id.rv_yesterday);
+            TextView cdLastWeekTextView = findViewById(R.id.rv_lastWeek);
+            TextView cdLastMonthTextView = findViewById(R.id.rv_lastMonth);
+            // Update the hours based on the selected option
+            switch (selectedOption) {
+                case "yesterday":
+                    cdLastWeekTextView.setVisibility(View.GONE);
+                    cdLastMonthTextView.setVisibility(View.GONE);
+                    cdYesterdayTextView.setText(yesterdayHours);
+//                    setVisibility(cl, lastWeekHours, lastMonthHours);
+                    adapter.notifyDataSetChanged();
+                    break;
+                case "last week":
+                    cdYesterdayTextView.setVisibility(View.GONE);
+                    cdLastMonthTextView.setVisibility(View.GONE);
+                    cdLastWeekTextView.setText(lastWeekHours);
+//                    setVisibility(cl, yesterdayHours, lastMonthHours);
+                    adapter.notifyDataSetChanged();
+                    break;
+                case "last month":
+                    cdYesterdayTextView.setVisibility(View.GONE);
+                    cdLastWeekTextView.setVisibility(View.GONE);
+                    cdLastMonthTextView.setText(lastMonthHours);
+//                    setVisibility(cl, yesterdayHours, lastWeekHours);
+                    adapter.notifyDataSetChanged();
+                    break;
+            }
+        }
 
+    }
+
+    private void setVisibility(ContactLog contactLog, String hours1, String hours2) {
+        // Update the corresponding fields in the ContactLog object
+
+        contactLog.setYesterdayHours(hours1);
+        contactLog.setLastWeekHours(hours2);
+    }
+//    public void handleMainActivity(String selectedOption) {
+////        if (cl == null)
+////            return;
+////        String name = cl.getName();
+////        String phoneNumber = cl.getPhoneNumber();
+////        String yesterdayHours = cl.getYesterdayHours();
+////        String lastWeekHours = cl.getLastWeekHours();
+////        String lastMonthHours = cl.getLastMonthHours();
+//
+//        TextView yesterdayTextView = findViewById(R.id.yesterdayHeader);
+//        TextView lastWeekTextView = findViewById(R.id.lastWeekHeader);
+//        TextView lastMonthTextView = findViewById(R.id.lastMonthHeader);
+//
+////        TextView cdNameTextView = findViewById(R.id.rv_textName);
+////
+////        TextView cdPhoneTextView = findViewById(R.id.rv_phoneNo);
+//
+//        TextView cdYesterdayTextView = findViewById(R.id.rv_yesterday);
+//        TextView cdLastWeekTextView = findViewById(R.id.rv_lastWeek);
+//        TextView cdLastMonthTextView = findViewById(R.id.rv_lastMonth);
+////        cdNameTextView.setText(name);
+////        cdPhoneTextView.setText(phoneNumber);
+////        cdYesterdayTextView.setText(yesterdayHours);
+////        cdLastWeekTextView.setText(lastWeekHours);
+////        cdLastMonthTextView.setText(lastMonthHours);
+//        setVisibilityBasedOnOption(selectedOption, cdYesterdayTextView, cdLastWeekTextView, cdLastMonthTextView, yesterdayTextView, lastWeekTextView, lastMonthTextView);
+//    }
+//    private void setVisibilityBasedOnOption(String selectedOption, TextView cdYesterdayTextView, TextView cdLastWeekTextView, TextView cdLastMonthTextView, TextView yesterdayTextView, TextView lastWeekTextView, TextView lastMonthTextView) {
+//        switch (Objects.requireNonNull(selectedOption)) {
+//            case "yesterday":
+//                setVisibility(cdLastWeekTextView, cdLastMonthTextView, lastWeekTextView, lastMonthTextView);
+//                break;
+//            case "last week":
+//                setVisibility(cdYesterdayTextView, cdLastMonthTextView, yesterdayTextView, lastMonthTextView);
+//                break;
+//            case "last month":
+//                setVisibility(cdYesterdayTextView, cdLastWeekTextView, yesterdayTextView, lastWeekTextView);
+//                break;
+//        }
+//    }
+//
+//    private void setVisibility(TextView... textViews) {
+//        for (TextView textView : textViews) {
+//            textView.setVisibility(TextView.GONE);
+//        }
+//    }
     @Override
     public void onItemClick(int position) {
-        this.cd_position = position;
-
+//        this.cd_position = position;
+        if(position != -1) {
+            Intent intent = new Intent(MainActivity.this, ContactDetailsActivity.class);
+            intent.putExtra("CONTACT_LOG", contactLogs.get(position));
+//            intent.putExtra("SELECTED_OPTION", selectedOption);
+            intent.putExtra("SOURCE_ACTIVITY", "MainActivity");
+            startActivity(intent);
+        }
     }
 }
